@@ -26,8 +26,8 @@ const CreateForm = () => {
         })
 
         if (res.status === 201) {
-            router.refresh()
             router.push('/tickets')
+            router.refresh()
         }
         
     }

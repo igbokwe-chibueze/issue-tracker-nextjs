@@ -1,25 +1,30 @@
-import { Suspense } from "react"
-import TicketsList from "./TicketsList"
-import Loading from "../loading"
+import { Suspense } from "react";
+import TicketsList from "./TicketsList";
+import Loading from "../loading";
+import ErrorBoundary from "./error";
+import { getTickets } from "../services/ticketsService";
 
-const Tickets = () => {
-  return (
-    <main>
-      <nav>
-        <div>
-          <h2>Tickets</h2>
-          <p><small>Currently open tickets.</small></p>
-        </div>
-      </nav>
+// This is a server component
+const Tickets = async () => {
+  try {
+    const tickets = await getTickets();
 
-      {/* The Suspense component ensures only the components within it is streamed, without this the entire page is streamed.
-        Without Suspense the Loading Component shows for the entire page, but with it, the Loading Component 
-        only shows for components within Components */}
-      <Suspense fallback={<Loading/>}>
-        <TicketsList />
-      </Suspense>
-    </main>
-  )
-}
+    return (
+      <main>
+        <nav>
+          <div>
+            <h2>Tickets</h2>
+            <p><small>Currently open tickets.</small></p>
+          </div>
+        </nav>
+        <Suspense fallback={<Loading />}>
+          <TicketsList tickets={tickets} />
+        </Suspense>
+      </main>
+    );
+  } catch (error) {
+    return <ErrorBoundary message={error.message} />;
+  }
+};
 
-export default Tickets
+export default Tickets;
